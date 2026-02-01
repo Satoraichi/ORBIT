@@ -1,0 +1,9 @@
+{% extends "ORBIT/base.html" %}
+{% load static %}
+
+{% block title %}ホーム{% endblock title %}
+
+{% block extra_style %}
+<link rel="preload" href="{% static 'ORBIT/css/index.css' %}" as="style">
+<link rel="stylesheet" href="{% static 'ORBIT/css/index.css' %}">
+{% endblock extra_style %}

@@ -1,0 +1,8 @@
+/* 総合的なスタイルの設定 */
+
+@charset "UTF-8";
+
+html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+}
