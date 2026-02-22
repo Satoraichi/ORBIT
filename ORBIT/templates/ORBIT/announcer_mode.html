@@ -1,0 +1,215 @@
+{% extends "ORBIT/base.html" %}
+{% load static %}
+
+{% block title %}A-{{ event.name }}{% endblock title %}
+
+{% block extra_style %}
+<link rel="preload" href="{% static 'ORBIT/css/announcer_mode.css' %}" as="style">
+<link rel="stylesheet" href="{% static 'ORBIT/css/announcer_mode.css' %}">
+{% endblock extra_style %}
+
+{# モード中なので復帰ボタンを非表示 #}
+{% block mode_return_button %}{% endblock mode_return_button %}
+
+{% block header %} 
+    <div class="h-program"><span>{{ event.name }}</span><span class="small">{{ program.number }}</span><span>{{ program.name }}</span></div>
+    <div class="h-PIC"><span class="small">担当</span><span>{{ program.member_ann.family_name|default:"未設定" }}</span></div>
+    <div class="h-realtime-clock">
+        <span id="realtime-clock">00:00:00</span>
+    </div>
+    <a class="h-accent h-logout" href="{% url 'exit_mode' event.slug %}" 
+    onclick="return confirm('終了しますか？送信済みの指示はすべて消去され、モードを終了します。')">
+        <span class="material-symbols-rounded">logout</span>
+    </a>
+
+<script>
+    function syncClock() {
+        const now = new Date();
+        const clockEl = document.getElementById('realtime-clock');
+        if (clockEl) clockEl.textContent = now.toLocaleTimeString('ja-JP', { hour12: false });
+        setTimeout(syncClock, 1000 - now.getMilliseconds());
+    }
+    syncClock();
+</script>
+{% endblock header %}
+
+{% block sidebar %}
+    <a class="s-theme s-compare active" onclick="switchTab('change')">
+        <span class="material-symbols-rounded">compare_arrows</span>
+    </a>
+    <a class="s-theme s-article" onclick="switchTab('manuscript')">
+        <span class="material-symbols-rounded">article</span>
+    </a>
+    <a class="s-theme s-direction" onclick="switchTab('direction')">
+        <span class="material-symbols-rounded">record_voice_over</span>
+    </a>
+
+    <a class="s-theme s-small_status 
+        {% with last=instructions.first %}
+            {% if last.action_type == 'circle' %}status-start
+            {% elif last.action_type == 'skip_next' %}status-cue
+            {% elif last.action_type == 'check' %}status-finish
+            {% elif last.action_type == 'close' %}status-cancel
+            {% elif last.action_type in '30,15,5' %}status-warn
+            {% endif %}
+        {% endwith %}" 
+        id="sidebar-status">
+        {% with last_instruction=instructions.first %}
+            {% if last_instruction %}
+                {% if last_instruction.action_type in '30,15,5' %}
+                    <span class="status-warn-text">{{ last_instruction.action_type }}</span>
+                {% else %}
+                    <span class="material-symbols-rounded 
+                        {% if last_instruction.action_type == 'circle' %}status-start
+                        {% elif last_instruction.action_type == 'skip_next' %}status-cue
+                        {% elif last_instruction.action_type == 'check' %}status-finish
+                        {% elif last_instruction.action_type == 'close' %}status-cancel
+                        {% endif %}">
+                        {{ last_instruction.action_type }}
+                    </span>
+                {% endif %}
+            {% endif %}
+        {% endwith %}
+    </a>
+{% endblock sidebar %}
+
+{% block content %}
+    <div class="director-display-area">
+        {# --- 1. 変更確認 --- #}
+        <section id="section-change" class="tab-section">
+            <div class="tab-content">
+                <h2>プログラム変更・確認</h2>
+                <div class="changes-container">
+                    {% for change in changes %}
+                        <div class="change-card">
+                            <div class="change-time">{{ change.created_at|date:"H:i" }} 更新</div>
+                            <div class="change-diff">
+                                <div class="diff-box before"><span class="label">変更前</span><p>{{ change.before_text|linebreaksbr }}</p></div>
+                                <div class="diff-arrow"><span class="material-symbols-rounded">arrow_forward</span></div>
+                                <div class="diff-box after"><span class="label">変更後</span><p>{{ change.after_text|linebreaksbr }}</p></div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="no-data"><p><span class="material-symbols-rounded">check_circle</span> 変更事項なし</p></div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+
+        {# --- 2. 原稿 --- #}
+        <section id="section-manuscript" class="tab-section manuscript">
+            {% if program.manuscript_pdf %}
+            <iframe
+                src="{{ program.manuscript_pdf.url }}#toolbar=0&view=FitH"
+                type="application/pdf"
+                width="100%"
+                style="border: none; height:calc(100dvh - 6rem);">
+            </iframe>
+            {% else %}
+                <div class="no-data"><p><span class="material-symbols-rounded">warning</span> 原稿PDF未登録</p></div>
+            {% endif %}
+        </section>
+
+        {# --- 3. 指示表示 --- #}
+        <section id="section-direction" class="tab-section">
+            <div class="tab-content" style="text-align: center; padding-top: 2rem;">
+                <div id="current-instruction-display">
+                    {% with last_instruction=instructions.first %}
+                        {% if last_instruction %}
+                            <div class="instruction-content-large">
+                                {% if last_instruction.action_type == 'circle' %}
+                                    <span class="material-symbols-rounded icon-giant status-start">circle</span>
+                                {% elif last_instruction.action_type == 'skip_next' %}
+                                    <span class="material-symbols-rounded icon-giant status-cue">skip_next</span>
+                                {% elif last_instruction.action_type == 'check' %}
+                                    <span class="material-symbols-rounded icon-giant status-finish">check</span>
+                                {% elif last_instruction.action_type == 'close' %}
+                                    <span class="material-symbols-rounded icon-giant status-cancel">close</span>
+                                {% elif last_instruction.action_type in '30,15,5' %}
+                                    <span class="instruction-text-giant status-warn">{{ last_instruction.action_type }}</span>
+                                {% endif %}
+                                <div class="instruction-time-small">{{ last_instruction.created_at|date:"H:i:s" }} 更新</div>
+                            </div>
+                        {% else %}
+                            <p class="no-data">待機中...</p>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+            </div>
+        </section>
+    </div>
+
+<script>
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab-section').forEach(section => section.style.display = 'none');
+        const activeSection = document.getElementById('section-' + tabName);
+        if (activeSection) activeSection.style.display = 'block';
+        document.querySelectorAll('.sidebar a').forEach(link => link.classList.remove('active'));
+        const iconClassMap = { 'change': '.s-compare', 'manuscript': '.s-article', 'direction': '.s-direction' };
+        const activeLink = document.querySelector(iconClassMap[tabName]);
+        if (activeLink) activeLink.classList.add('active');
+    }
+
+    const eventSlug = "{{ event.slug }}";
+    const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+    const chatSocket = new WebSocket(protocol + window.location.host + '/ws/instruction/' + eventSlug + '/');
+
+chatSocket.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+    const action = data.action_type;
+    
+    const displayContainer = document.getElementById('current-instruction-display'); 
+    const sidebarContainer = document.getElementById('sidebar-status');
+
+    const timeStr = new Date().toLocaleTimeString('ja-JP', { hour12: false });
+
+    const config = {
+        'circle':      { icon: 'circle',       colorClass: 'status-start' },
+        'skip_next':   { icon: 'skip_next',    colorClass: 'status-cue' },
+        'check':       { icon: 'check',        colorClass: 'status-finish' },
+        'close':       { icon: 'close',        colorClass: 'status-cancel' },
+        '30':          { icon: '30',           colorClass: 'status-warn' },
+        '15':          { icon: '15',           colorClass: 'status-warn' },
+        '5':           { icon: '5',            colorClass: 'status-warn' }
+    };
+
+    const current = config[action] || { icon: action, colorClass: '' };
+
+    // --- 1. メイン表示エリアの更新 ---
+    if (displayContainer) {
+        let innerContent = (['30', '15', '5'].includes(action)) 
+            ? `<span class="instruction-text-giant ${current.colorClass}">${action}</span>`
+            : `<span class="material-symbols-rounded icon-giant ${current.colorClass}">${current.icon}</span>`;
+        
+        displayContainer.innerHTML = `
+            <div class="instruction-content-large arrival-animation">
+                ${innerContent}
+                <div class="instruction-time-small">${timeStr} 更新</div>
+            </div>
+        `;
+    }
+
+    // --- 2. サイドバー（aタグのクラスと中身を更新） ---
+    if (sidebarContainer) {
+        // 全ステータスクラスを一旦削除
+        sidebarContainer.classList.remove('status-start', 'status-cue', 'status-finish', 'status-cancel', 'status-warn');
+        
+        // 新しいステータスクラスを追加
+        if (current.colorClass) {
+            sidebarContainer.classList.add(current.colorClass);
+        }
+
+        // 中身の書き換え
+        sidebarContainer.innerHTML = (['30', '15', '5'].includes(action))
+            ? `<span class="status-warn-text">${action}</span>`
+            : `<span class="material-symbols-rounded">${current.icon}</span>`;
+        
+        // アニメーション
+        sidebarContainer.classList.add('status-update-flash');
+        setTimeout(() => sidebarContainer.classList.remove('status-update-flash'), 1000);
+    }
+};
+
+    document.addEventListener('DOMContentLoaded', () => switchTab('change'));
+</script>
+{% endblock content %}

@@ -1,0 +1,195 @@
+{% extends "ORBIT/base.html" %}
+{% load static %}
+
+{% block title %}D-{{ event.name }}{% endblock title %}
+
+{% block extra_style %}
+<link rel="preload" href="{% static 'ORBIT/css/director_mode.css' %}" as="style">
+<link rel="stylesheet" href="{% static 'ORBIT/css/director_mode.css' %}">
+{% endblock extra_style %}
+
+{% block header %} 
+    <div class="h-program"><span>{{ event.name }}</span><span class="small">{{ program.number }}</span><span>{{ program.name }}</span></div>
+    <div class="h-PIC"><span class="small">担当</span><span>{{ program.member_d.family_name|default:"未設定" }}</span></div>
+    <div class="h-realtime-clock">
+        <span id="realtime-clock">00:00:00</span>
+    </div>
+    <a class="h-accent h-logout" href="{% url 'exit_mode' event.slug %}" 
+    onclick="return confirm('終了しますか？送信済みの指示はすべて消去され、モードを終了します。')">
+        <span class="material-symbols-rounded">logout</span>
+    </a>
+    {% block mode_return_button %}{% endblock mode_return_button %}
+
+<script>
+    function syncClock() {
+        const now = new Date();
+        const clockEl = document.getElementById('realtime-clock');
+        if (clockEl) clockEl.textContent = now.toLocaleTimeString('ja-JP', { hour12: false });
+        setTimeout(syncClock, 1000 - now.getMilliseconds());
+    }
+    syncClock();
+</script>
+{% endblock header %}
+
+{% block sidebar %}
+    <a class="s-theme s-compare active" onclick="switchTab('change')">
+        <span class="material-symbols-rounded">compare_arrows</span>
+    </a>
+    <a class="s-theme s-article" onclick="switchTab('manuscript')">
+        <span class="material-symbols-rounded">article</span>
+    </a>
+    <a class="s-theme s-direction" onclick="switchTab('direction')">
+        <span class="material-symbols-rounded">record_voice_over</span>
+    </a>
+{% endblock sidebar %}
+
+{% block content %}
+    <div class="director-display-area">
+        {# --- 1. 変更確認 --- #}
+        <section id="section-change" class="tab-section">
+            <div class="tab-content">
+                <h2>プログラム変更・確認</h2>
+                <div class="changes-container">
+                    {% for change in changes %}
+                        <div class="change-card">
+                            <div class="change-time">{{ change.created_at|date:"H:i" }} 更新</div>
+                            <div class="change-diff">
+                                <div class="diff-box before"><span class="label">変更前</span><p>{{ change.before_text|linebreaksbr }}</p></div>
+                                <div class="diff-arrow"><span class="material-symbols-rounded">arrow_forward</span></div>
+                                <div class="diff-box after"><span class="label">変更後</span><p>{{ change.after_text|linebreaksbr }}</p></div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="no-data"><p><span class="material-symbols-rounded">check_circle</span> 変更事項なし</p></div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+
+        {# --- 2. 原稿 --- #}
+        <section id="section-manuscript" class="tab-section manuscript">
+            {% if program.manuscript_pdf %}
+            <iframe
+                src="{{ program.manuscript_pdf.url }}#toolbar=0&view=FitH"
+                type="application/pdf"
+                width="100%"
+                style="border: none; height:calc(100dvh - 6rem);">
+            </iframe>
+            {% else %}
+                <div class="no-data"><p><span class="material-symbols-rounded">warning</span> 原稿PDF未登録</p></div>
+            {% endif %}
+        </section>
+
+        {# --- 3. 指示表示 --- #}
+        <section id="section-direction" class="tab-section">
+            <div class="tab-content" style="text-align: center; padding-top: 2rem;">
+                <div id="current-instruction-display">
+                    {% with last_instruction=instructions.first %}
+                        {% if last_instruction %}
+                            <div class="instruction-content-large">
+                                {% if last_instruction.action_type == 'circle' %}
+                                    <span class="material-symbols-rounded icon-giant status-start">circle</span>
+                                {% elif last_instruction.action_type == 'skip_next' %}
+                                    <span class="material-symbols-rounded icon-giant status-cue">skip_next</span>
+                                {% elif last_instruction.action_type == 'stop_circle' %}
+                                    <span class="material-symbols-rounded icon-giant status-finish">check</span>
+                                {% elif last_instruction.action_type == 'close' %}
+                                    <span class="material-symbols-rounded icon-giant status-cancel">close</span>
+                                {% elif last_instruction.action_type in '30,15,5' %}
+                                    <span class="instruction-text-giant status-warn">{{ last_instruction.action_type }}</span>
+                                {% endif %}
+                                <div class="instruction-time-small">{{ last_instruction.created_at|date:"H:i:s" }} 更新</div>
+                            </div>
+                        {% else %}
+                            <p class="no-data">待機中...</p>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+            </div>
+        </section>
+    </div>
+
+    {# --- 送信パネル --- #}
+    <div class="director-control-panel">
+        <div class="control-grid">
+            <button class="d-btn d-btn-warn" onclick="sendSignal('30')">30</button>
+            <button class="d-btn d-btn-warn" onclick="sendSignal('15')">15</button>
+            <button class="d-btn d-btn-warn" onclick="sendSignal('5')">5</button>
+            <button class="d-btn d-btn-go" onclick="sendSignal('circle')"><span class="material-symbols-rounded" style="font-size:3rem">circle</span>START</button>
+            <button class="d-btn d-btn-next" onclick="sendSignal('skip_next')"><span class="material-symbols-rounded">skip_next</span>CUE</button>
+            <button class="d-btn d-btn-stop" onclick="sendSignal('check')"><span class="material-symbols-rounded">check</span>FINISH</button>
+            <button class="d-btn d-btn-cancel" onclick="sendSignal('close')"><span class="material-symbols-rounded">close</span>CANCEL</button>
+        </div>
+    </div>
+
+<script>
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab-section').forEach(section => section.style.display = 'none');
+        const activeSection = document.getElementById('section-' + tabName);
+        if (activeSection) activeSection.style.display = 'block';
+        document.querySelectorAll('.sidebar a').forEach(link => link.classList.remove('active'));
+        const iconClassMap = { 'change': '.s-compare', 'manuscript': '.s-article', 'direction': '.s-direction' };
+        const activeLink = document.querySelector(iconClassMap[tabName]);
+        if (activeLink) activeLink.classList.add('active');
+    }
+
+    const eventSlug = "{{ event.slug }}";
+    const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+    const chatSocket = new WebSocket(protocol + window.location.host + '/ws/instruction/' + eventSlug + '/');
+
+    // 送信処理
+    function sendSignal(type) {
+        if (chatSocket.readyState === WebSocket.OPEN) {
+            chatSocket.send(JSON.stringify({ 'action_type': type }));
+        }
+    }
+
+    // 受信処理（入れ替え）
+    chatSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        const action = data.action_type;
+        const displayContainer = document.getElementById('current-instruction-display'); 
+        if (!displayContainer) return;
+
+        const now = new Date();
+        const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+
+        // --- 色とラベル、アイコンの判定 ---
+        let colorClass = "";
+        let label = action;
+        let iconName = action;
+
+        const config = {
+            'circle':      { label: 'START',     icon: 'circle',       color: 'status-start' },   // 緑
+            'skip_next':   { label: 'NEXT CUE',  icon: 'skip_next',    color: 'status-cue' },     // 青
+            'check': { label: 'FINISH',    icon: 'check',        color: 'status-finish' },  // オレンジ
+            'close':       { label: 'CANCEL',    icon: 'close',        color: 'status-cancel' },  // 赤
+            '30':          { label: 'sec ago',   icon: '30',           color: 'status-warn' },
+            '15':          { label: 'sec ago',   icon: '15',           color: 'status-warn' },
+            '5':           { label: 'sec ago',   icon: '5',            color: 'status-warn' }
+        };
+
+        const current = config[action] || { label: action, icon: action, color: '' };
+
+        let innerContent = '';
+        if (['30', '15', '5'].includes(action)) {
+            innerContent = `
+                <span class="instruction-text-giant ${current.color}">${action}</span>`;
+        } else {
+            innerContent = `
+                <span class="material-symbols-rounded icon-giant ${current.color}">${current.icon}</span>`;
+        }
+
+        displayContainer.innerHTML = `
+            <div class="instruction-content-large arrival-animation">
+                ${innerContent}
+                <div class="instruction-time-small">${timeStr} 更新</div>
+            </div>
+        `;
+
+        switchTab('direction');
+    };
+
+    document.addEventListener('DOMContentLoaded', () => switchTab('change'));
+</script>
+{% endblock content %}

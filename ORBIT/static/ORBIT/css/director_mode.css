@@ -1,0 +1,201 @@
+@charset "UTF-8";
+
+/* ヘッダー */
+
+.h-program, .h-PIC, .h-realtime-clock {
+    display: flex;
+    margin-left: auto;
+    margin-right: 2rem;
+    align-items: center;
+    justify-content: center;
+}
+
+.h-program span, .h-PIC span {
+    font-family: var(--title-font);
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.h-program span.small, .h-PIC span.small {
+    margin: 0 1rem;
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+
+.h-realtime-clock span {
+    font-family: var(--clock-font);
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+/* サイドバー */
+
+a.s-compare { margin-top: 3rem; }
+a.s-article, a.s-direction { margin-top: 0; border-top: none !important; }
+
+/* サイドバー・ヘッダー共通テーマ */
+
+a.h-theme span, a.s-theme span { color: var(--accent-colorD); }
+
+a.h-theme:hover, a.s-theme:hover,
+.sidebar a.active {
+    background-color: var(--accent-colorD);
+}
+
+a.h-theme:hover span, a.s-theme:hover span,
+.sidebar a.active span {
+    color: var(--theme-colorD);
+}
+
+a.s-theme {
+    display: flex;
+    background-color: var(--theme-colorD);
+    border-top: #e5e7ec solid .15rem;
+    border-bottom: #e5e7ec solid .15rem;
+}
+
+/* コンテンツ */
+
+.tab-section {
+    display: none;
+}
+
+.tab-section.active {
+    display: block;
+}
+
+section.manuscript {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.no-data {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: calc(100dvh - 6rem);
+}
+
+.no-data p, .no-data p span {
+    font-size: 1.5rem;
+    line-height: 1.8rem;
+    font-weight: 600;
+    color: var(--accent-colorD);
+}
+
+/* 指示モード */
+
+.instruction-content-large span {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    font-variation-settings:'wght' 700;
+}
+
+.instruction-text-giant {
+    font-family: var(--clock-font);
+    font-size: 12rem;
+    font-weight: 900;
+    line-height: 1;
+    color: #2d6f06;
+}
+
+.icon-giant {
+    font-size: 10rem !important;
+    color: #000000;
+}
+
+.instruction-time-small {
+    margin-top: 2rem;
+    font-size: 1.2rem;
+    color: #888;
+}
+
+/* 操作パネル */
+
+.director-display-area {
+    overflow-y: auto;
+}
+
+.director-control-panel {
+    position: fixed;
+    bottom: 0;
+    left: 6rem;
+    width: calc(100% - 10rem);
+    height: 200px;
+    background: #000000bb;
+    padding: 1rem;
+    margin: .5rem 2rem;
+    border-radius: 2rem;
+    corner-shape: superellipse(1.4);
+    z-index: 90;
+    box-sizing: border-box;
+}
+
+.control-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 12px;
+    height: 100%;
+}
+
+/* 操作ボタン共通 */
+
+.d-btn {
+    border: none;
+    border-radius: 1rem;
+    corner-shape: superellipse(1.4);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    transition: transform 0.05s, brightness 0.1s;
+    font-family: var(--clock-font);
+    font-size: 1.5rem;
+    font-weight: 800;
+}
+
+.d-btn:active { transform: scale(0.96); filter: brightness(0.8); }
+
+/* ボタンカラーバリエーション */
+.d-btn-warn   { background: #fffdf4; color: #000; }
+.d-btn-go     { background: #0eb527; color: #fff; grid-row: span 2; flex-direction: column; }
+.d-btn-next   { background: #2f8aea; color: #fff; }
+.d-btn-stop   { background: #eea200; color: #fff; }
+.d-btn-cancel { background: #f11717; color: #fff; }
+/* ステータス別カラー定義 */
+.status-start  { color: #0eb527 !important; } /* 緑 */
+.status-cue    { color: #2f8aea !important; } /* 青 */
+.status-finish { color: #eea200 !important; } /* オレンジ */
+.status-cancel { color: #f11717 !important; } /* 赤 */
+.status-warn   { color: #5c9600 !important; } /* 30/15/5秒などは黄色 */
+
+/* arrival-animationの中の文字色も反映されるように調整 */
+.instruction-label-large {
+    color: #fff; /* ラベル（文字）は白のままで、アイコンや数字だけ色付けする場合 */
+}
+
+/* アニメーション */
+
+.arrival-animation {
+    /* bounce-inとflash-greenの複合的な演出 */
+    animation: bounce-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes bounce-in {
+    0% { transform: scale(0.5); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes flash-green {
+    0% { background-color: rgba(0, 255, 0, 0.3); }
+    100% { background-color: transparent; }
+}

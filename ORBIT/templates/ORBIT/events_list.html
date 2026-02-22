@@ -1,0 +1,59 @@
+{% extends "ORBIT/base.html" %}
+{% load static %}
+
+{% block title %}イベント一覧{% endblock title %}
+
+{% block extra_style %}
+<link rel="preload" href="{% static 'ORBIT/css/events_list.css' %}" as="style">
+<link rel="stylesheet" href="{% static 'ORBIT/css/events_list.css' %}">
+{% endblock extra_style %}
+
+{% block content %}
+
+{# --- 1. 常設（年度なし）のセクションを先に処理 --- #}
+<section class="year-section permanent-section">
+    <h2>通年</h2>
+    <div class="events_box">
+        {% for event in events %}
+            {% if event.is_permanent or not event.fiscal_year %}
+            <div class="flex-column permanent-item">
+                <a class="basic_1" href="{% url 'event_detail' event.slug %}">
+                    {{ event.name }}
+                </a>
+                <span>常設プログラム</span>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</section>
+
+<hr class="section-divider">
+
+{# --- 2. 年度があるイベントだけを regroup して処理 --- #}
+{% regroup events by fiscal_year as grouped_list %}
+
+{% for year_data in grouped_list %}
+    {# 年度がある場合（grouper が存在する）のみ表示 #}
+    {% if year_data.grouper %}
+    <section class="year-section">
+        <h2>{{ year_data.grouper }}</h2>
+        <div class="events_box">
+            {% for event in year_data.list %}
+                {# 常設ではないものだけを表示 #}
+                {% if not event.is_permanent %}
+                <div class="flex-column">
+                    <a class="basic_1" href="{% url 'event_detail' event.slug %}">
+                        {{ event.name }}
+                    </a>
+                    <span>{{ event.date|date:"Y/m/d" }}</span>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+{% empty %}
+    <p>まだイベントが登録されていません。</p>
+{% endfor %}
+
+{% endblock content %}

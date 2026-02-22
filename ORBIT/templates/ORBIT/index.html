@@ -7,3 +7,25 @@
 <link rel="preload" href="{% static 'ORBIT/css/index.css' %}" as="style">
 <link rel="stylesheet" href="{% static 'ORBIT/css/index.css' %}">
 {% endblock extra_style %}
+
+{% block sidebar %}
+    <a class="s-theme s-info">
+        <span class="material-symbols-rounded">info</span>
+    </a>
+{% endblock sidebar %}
+
+{% block content %}
+    <section class="pickup-tile">
+        <div class="p-tile-image">
+            <img>
+        </div>
+        <div class="p-title">
+            <h2>第63回体育祭</h2>
+        </div>
+        <a class="basic_1 right-buttom" href="{% url 'event_detail' 'sports_fes2026' %}">開く<span class="material-symbols-rounded">arrow_right_alt</span></a>
+    </section>
+
+    <section class="topics">
+        <a class="basic_1" href="{% url 'event_list' %}"><span class="material-symbols-rounded">search</span>イベント一覧から探す</a>
+    </section>
+{% endblock content %}

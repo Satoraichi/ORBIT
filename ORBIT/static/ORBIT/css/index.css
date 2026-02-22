@@ -1,2 +1,46 @@
 /* ホーム画面スタイルの設定 */
 
+@charset "UTF-8";
+
+.s-info {
+    margin-top: 3rem;
+}
+
+section.pickup-tile {
+    width: 100%;
+    height: 600px;
+    margin: 0;
+    background-color: #00000088;
+}
+
+section.pickup-tile .p-title {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: max-content;
+    margin: 2rem 3rem;
+}
+
+section.pickup-tile .p-title h2 {
+    font-size: 3rem;
+    line-height: 4rem;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+a.basic_1.right-buttom {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: max-content;
+    margin: 2rem 2.5rem;
+}
+
+.topics {
+    display: grid;
+    width: 100%;
+}
+
+.topics a.basic_1 {
+    width: max-content;
+}

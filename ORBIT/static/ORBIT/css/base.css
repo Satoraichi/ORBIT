@@ -5,4 +5,394 @@
 html {
     scroll-behavior: smooth;
     font-size: 16px;
+    width: 100vw;
+    height: 100vh;
+}
+
+/* フォント設定 */
+
+/* 筑紫A丸ゴシック */
+
+    /* Light (細字) */
+    @font-face {
+        font-family: 'FOT-TsukuARdGothicStd';
+        src: url('../fonts/FOT-TsukuARdGothicStd-L.otf') format('truetype');
+        font-weight: 300;
+        font-style: normal;
+        font-display: swap;
+    }
+
+    /* Regular (中細字) */
+    @font-face {
+        font-family: 'FOT-TsukuARdGothicStd';
+        src: url('../fonts/FOT-TsukuARdGothicStd-R.otf') format('truetype');
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+    }
+
+    /* Medium (中字) */
+    @font-face {
+        font-family: 'FOT-TsukuARdGothicStd';
+        src: url('../fonts/FOT-TsukuARdGothicStd-M.otf') format('truetype');
+        font-weight: 500;
+        font-style: normal;
+        font-display: swap;
+    }
+
+    /* DemiBold (中太字) */
+    @font-face {
+        font-family: 'FOT-TsukuARdGothicStd';
+        src: url('../fonts/FOT-TsukuARdGothicStd-D.otf') format('truetype');
+        font-weight: 600;
+        font-style: normal;
+        font-display: swap;
+    }
+
+    /* Bold (太字) */
+    @font-face {
+        font-family: 'FOT-TsukuARdGothicStd';
+        src: url('../fonts/FOT-TsukuARdGothicStd-B.otf') format('truetype');
+        font-weight: 700;
+        font-style: normal;
+        font-display: swap;
+    }
+
+    /* ExtraBold (特太字) */
+    @font-face {
+        font-family: 'FOT-TsukuARdGothicStd';
+        src: url('../fonts/FOT-TsukuARdGothicStd-E.otf') format('truetype');
+        font-weight: 800;
+        font-style: normal;
+        font-display: swap;
+    }
+
+/* 筑紫オールドゴシック */
+
+    /* Light (細字) */
+    @font-face {
+        font-family: 'FOT-TsukuOldGothicStd';
+        src: url('../fonts/FOT-TsukuOldGothicStd-L.otf') format('truetype');
+        font-weight: 300;
+        font-style: normal;
+        font-display: swap;
+    }
+
+    /* Regular (中細字) */
+    @font-face {
+        font-family: 'FOT-TsukuOldGothicStd';
+        src: url('../fonts/FOT-TsukuOldGothicStd-R.otf') format('truetype');
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+    }
+
+    /* Medium (中字) */
+    @font-face {
+        font-family: 'FOT-TsukuOldGothicStd';
+        src: url('../fonts/FOT-TsukuOldGothicStd-M.otf') format('truetype');
+        font-weight: 500;
+        font-style: normal;
+        font-display: swap;
+    }
+
+    /* DemiBold (中太字) */
+    @font-face {
+        font-family: 'FOT-TsukuOldGothicStd';
+        src: url('../fonts/FOT-TsukuOldGothicStd-D.otf') format('truetype');
+        font-weight: 600;
+        font-style: normal;
+        font-display: swap;
+    }
+
+    /* Bold (太字) */
+    @font-face {
+        font-family: 'FOT-TsukuOldGothicStd';
+        src: url('../fonts/FOT-TsukuOldGothicStd-B.otf') format('truetype');
+        font-weight: 700;
+        font-style: normal;
+        font-display: swap;
+    }
+
+    /* ExtraBold (特太字) */
+    @font-face {
+        font-family: 'FOT-TsukuOldGothicStd';
+        src: url('../fonts/FOT-TsukuOldGothicStd-E.otf') format('truetype');
+        font-weight: 800;
+        font-style: normal;
+        font-display: swap;
+    }
+
+/* 筑紫AMゴシック */
+
+    /* Bold (太字) */
+    @font-face {
+        font-family: 'FOT-TsukuAMGothicLStd';
+        src: url('../fonts/FOT-TsukuAMGothicLStd-B.otf') format('truetype');
+        font-weight: 700;
+        /* bold */
+        font-style: normal;
+        font-display: swap;
+    }
+
+/* フォントパラメータ設定 */
+
+body {
+    --title-font: "FOT-TsukuOldGothicStd", sans-serif;
+    --text-font: "FOT-TsukuARdGothicStd", sans-serif;
+    --clock-font: "FOT-TsukuAMGothicLStd", sans-serif;
+}
+
+h1,
+h2 {
+    margin: 0;
+    font-family: var(--title-font);
+}
+
+h2 {
+    font-size: 2.5rem;
+    line-height: 3rem;
+    font-weight: 600;
+}
+
+h3 {
+    font-family: var(--text-font);
+}
+
+p {
+    font-family: var(--text-font);
+    font-weight: 500;
+}
+
+/* カラーパラメータ設定 */
+
+:root {
+    --theme-color1: #fff6f6;
+    --theme-colorD: #f6f9ff;
+    --theme-colorA: #f9fff6;
+    --accent-color1: #f02f03;
+    --accent-colorD: #002cee;
+    --select-A-color: #30c200;
+}
+
+/* body */
+
+body {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+}
+
+/* ヘッダー(共通) */
+
+header {
+    position: fixed;
+    display: flex;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 6rem;
+    padding: 0;
+    background-color: #ffffff;
+    box-shadow: 0 2px 5px #00000044;
+    z-index: 100;
+}
+
+a.h-accent {
+    display: flex;
+    background-color: var(--accent-color1);
+    width: 6rem;
+    height: 6rem;
+    align-items: center;
+    justify-content: center;
+    transition: .3s;
+}
+
+a.h-accent span {
+    font-size: 3rem;
+    color: var(--theme-color1);
+    transition: .3s;
+}
+
+a.h-accent:hover {
+    background-color: var(--theme-color1);
+}
+
+a.h-accent:hover span {
+    font-size: 3rem;
+    color: var(--accent-color1);
+}
+
+a.h-theme,
+a.s-theme {
+    display: flex;
+    background-color: var(--theme-color1);
+    width: 6rem;
+    height: 6rem;
+    align-items: center;
+    justify-content: center;
+    transition: .3s;
+}
+
+a.h-theme {
+    border-left: #e8e3e3 solid .15rem;
+    border-right: #e8e3e3 solid .15rem;    
+}
+
+a.s-theme {
+    border-top: #e8e3e3 solid .15rem;
+    border-bottom: #e8e3e3 solid .15rem;
+}
+
+a.h-theme span,
+a.s-theme span {
+    font-size: 3rem;
+    color: var(--accent-color1);
+    transition: .3s;
+}
+
+a.h-theme:hover,
+a.s-theme:hover {
+    background-color: var(--accent-color1);
+}
+
+a.h-theme:hover span,
+a.s-theme:hover span {
+    font-size: 3rem;
+    color: var(--theme-color1);
+}
+
+header a.h-title {
+    display: flex;
+    width: max-content;
+    height: 100%;
+    margin: 0 1.5rem;
+    align-items: center;
+}
+
+header a.h-title h1 {
+    margin: 0;
+    font-size: 2rem;
+    line-height: 3rem;
+    font-weight: 700;
+}
+
+/* サイドバー(共通) */
+
+.sidebar {
+    position: fixed;
+    top: 6rem;
+    left: 0;
+    width: 6rem;
+    height: calc(100% - 6rem);
+    background-color: #ffffff;
+    box-shadow: 0 2px 5px #00000044;
+    z-index: 99;
+}
+
+/* ラッパー */
+
+.wrapper {
+    position: relative;
+    width: calc(100% - 6rem);
+    height: max-content;
+    margin-top: 6rem;
+    margin-left: 6rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/* セクション(共通) */
+
+section {
+    position: relative;
+    width: calc(100% - 4rem);
+    height: max-content;
+    margin: 2rem;
+}
+
+/* ボタン・aタグ(共通) */
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+button.basic_1,
+a.basic_1 {
+    display: flex;
+    width: max-content;
+    padding: .5rem 1rem;
+    border: var(--accent-color1) solid .2rem;
+    border-radius: .2rem;
+    background-color: var(--theme-color1);
+    color: var(--accent-color1);
+    font-family: var(--title-font);
+    font-size: 1.5rem;
+    line-height: 1.8rem;
+    font-weight: 700;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 3px #00000044;
+    transition: .4s;
+}
+
+button.basic_1 span ,
+a.basic_1 span {
+    color: var(--accent-color1);
+    font-size: 1.5rem;
+    line-height: 1.8rem;
+    font-variation-settings: 'wght' 600;
+    transition: .4s;
+}
+
+button.basic_1:hover ,
+a.basic_1:hover {
+    background-color: var(--accent-color1);
+    color: var(--theme-color1);
+}
+
+button.basic_1:hover span ,
+a.basic_1:hover span {
+    color: var(--theme-color1);
+}
+
+.h-back {
+    margin-left: auto;
+}
+
+/* テーブル(共通) */
+
+table {
+    width: max-content;
+    margin: 1rem auto;
+}
+
+table th,
+table td {
+    font-family: var(--title-font);
+}
+
+table th {
+    padding: .5rem 1rem;
+    font-size: 1.4rem;
+    line-height: 1.5rem;
+    font-weight: 600;
+}
+
+table td{
+    padding: .5rem 1rem;
+    font-size: 1.5rem;
+    line-height: 2rem;
+    font-weight: 700;
+}
+
+/* レスポンシブ設定 */
+
+@media screen and (max-width: 1100px) {
+    html {
+        font-size: 11px;
+    }
 }

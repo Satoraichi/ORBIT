@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html>
+{% load static %}
+<html lang="ja">
 <head>
     <head>
     <meta charset="UTF-8">
@@ -11,9 +12,50 @@
             {% block title %}{% endblock title %} | ORBIT 放送支援システム
         {% endblock title_wrapper %}
     </title>
+
+    {% comment %} CSS {% endcomment %}
+    <link rel="preload" href="{% static 'ORBIT/css/base.css' %}" as="style">
+    <link rel="stylesheet" href="{% static 'ORBIT/css/base.css' %}">
+    {% block extra_style %}{% endblock %}
+
+    {% comment %} Material Symbols Rounded {% endcomment %}
+    <link rel="preload"
+        as="style" 
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
+        onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap">
+    </noscript>
 </head>
 <body>
-    <header
-
+    <header>
+        <a class="h-accent h-menu">
+            <span class="material-symbols-rounded">menu</span>
+        </a>
+        <a class="h-title" href="{% url 'index' %}">
+            <h1>ORBIT | 放送支援システム</h1>
+        </a>
+        {% block header %}{% endblock header %}
+        {% block mode_return_button %}
+        {% if request.session.active_event_slug %}
+            {% if request.session.active_mode == 'announcer' %}
+                <a href="{% url 'announcer_mode' request.session.active_event_slug request.session.active_program_num %}" class="h-accent h-back">
+                    <span class="material-symbols-rounded">settings_backup_restore</span>
+                </a>
+            {% elif request.session.active_mode == 'director' %}
+                <a href="{% url 'director_mode' request.session.active_event_slug request.session.active_program_num %}" class="h-accent h-back">
+                    <span class="material-symbols-rounded">settings_backup_restore</span>
+                </a>
+            {% endif %}
+        {% endif %}
+        {% endblock mode_return_button %}
+    </header>
+    <div class="sidebar">
+        {% block sidebar %}{% endblock sidebar %}
+    </div>
+    <div class="wrapper">
+        {% block content %}{% endblock content %}
+    </div>
 </body>
 </html>

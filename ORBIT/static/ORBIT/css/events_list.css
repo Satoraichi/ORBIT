@@ -1,0 +1,24 @@
+/* イベント一覧画面スタイルの設定 */
+
+@charset "UTF-8";
+
+.events_box {
+    display: flex;
+    flex-direction: row;
+    margin: 1rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.flex-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.flex-column span {
+    font-family: var(--text-font);
+    font-weight: 600;
+    color: var(--accent-color1);
+}

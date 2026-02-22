@@ -1,0 +1,82 @@
+{% extends "ORBIT/base.html" %}
+{% load static %}
+
+{% block title %}イベント一覧{% endblock title %}
+
+{% block extra_style %}
+<link rel="preload" href="{% static 'ORBIT/css/events_detail.css' %}" as="style">
+<link rel="stylesheet" href="{% static 'ORBIT/css/events_detail.css' %}">
+{% endblock extra_style %}
+
+{% block content %}
+
+<section>
+    <h2 class="event_title">{{ event.name }}</h2>
+    <div class="buttons">
+        <button class="basic_1 select-D-mode" id="start-D-mode" disabled>ディレクターモードで開始</button>
+        <button class="basic_1 select-A-mode" id="start-A-mode" disabled>アナウンサーモードで開始</button>
+        <button class="basic_1 select-A-mode" disabled>ブレイキングモードで開始</button>
+    </div>
+</section>
+<section>
+    <div class="program-grid">
+        <div class="grid-header">
+            <div>No.</div>
+            <div>プログラム名</div>
+            <div>C</div>
+            <div>D</div>
+            <div>Ann</div>
+        </div>
+
+        {% for program in event.programs.all %}
+            <div class="grid-row">
+                <div class="col-no">{{ program.number }}</div>
+                <div class="col-name">{{ program.name }}</div>
+                <div class="col-staff">
+                    <span class="label">C:</span>{{ program.member_c.family_name|default:"ー" }}
+                </div>
+                <div class="col-staff">
+                    <span class="label">D:</span>{{ program.member_d.family_name|default:"ー" }}
+                </div>
+                <div class="col-staff">
+                    <span class="label">Ann:</span>{{ program.member_ann.family_name|default:"ー" }}
+                </div>
+            </div>
+        {% empty %}
+            <p>プログラムがありません。</p>
+        {% endfor %}
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const rows = document.querySelectorAll('.grid-row');
+    const startABtn = document.getElementById('start-A-mode');
+    const startDBtn = document.getElementById('start-D-mode');
+
+    rows.forEach(row => {
+        row.addEventListener('click', function() {
+            // 選択状態の切り替え
+            rows.forEach(r => r.classList.remove('is-selected'));
+            this.classList.add('is-selected');
+
+            // 選択された行からプログラム番号を取得
+            const programNum = this.querySelector('.col-no').innerText.trim();
+            
+            // --- ボタンを有効化し、ジャンプ先を enter_mode に設定 ---
+            startABtn.disabled = false;
+            startABtn.onclick = function() {
+                // 直接モードに行くのではなく、'enter' を経由させる
+                location.href = `/events/{{ event.slug }}/enter/${programNum}/announcer/`;
+            };
+
+            startDBtn.disabled = false;
+            startDBtn.onclick = function() {
+                // 直接モードに行くのではなく、'enter' を経由させる
+                location.href = `/events/{{ event.slug }}/enter/${programNum}/director/`;
+            };
+        });
+    });
+});
+</script>
+{% endblock content %}

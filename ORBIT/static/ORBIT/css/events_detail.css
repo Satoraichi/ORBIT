@@ -1,0 +1,131 @@
+/* イベント詳細画面スタイルの設定 */
+
+@charset "UTF-8";
+
+h2.event_title {
+    width: max-content;
+    margin: 0 auto;
+    font-size: 3rem;
+    line-height: 3.5rem;
+}
+
+button.select-D-mode {
+    border: var(--accent-colorD) solid .2rem;
+    border-radius: .2rem;
+    background-color: var(--theme-colorD);
+    color: var(--accent-colorD);
+}
+
+button.select-D-mode:hover {
+    background-color: var(--accent-colorD);
+    color: var(--theme-colorD);
+}
+
+.buttons {
+    display: flex;
+    width: max-content;
+    margin: 2rem auto;
+    gap: 2rem;
+}
+
+/* グリッド全体のコンテナ */
+.program-grid {
+    display: grid;
+    width: 70%;
+    margin: 1rem auto;
+    gap: 1px; /* 境界線代わりの隙間 */
+}
+
+/* ヘッダーと行の共通設定 */
+.grid-header, .grid-row {
+    display: grid;
+    padding: 1rem;
+    grid-template-columns: 5rem 2fr 1fr 1fr 1fr; /* 幅の比率を指定 */
+    background-color: #fff;
+    border-radius: .5rem;
+    corner-shape: superellipse(1.2);
+    align-items: center;
+}
+
+/* ヘッダー固有 */
+.grid-header {
+    box-sizing: border-box;
+    background-color: #f2f2f2;
+    font-weight: bold;
+    text-align: center;
+    font-family: var(--title-font);
+    font-size: 1.2rem;
+    line-height: 1.5rem;
+    font-weight: 600;
+}
+
+.grid-header > div {
+    box-sizing: border-box;
+    border-right: #ffffff solid .2rem;
+}
+
+.grid-header > div:last-child {
+    border-right: none;
+}
+
+/* 選択された行のスタイル */
+.grid-row.is-selected {
+    background-color: var(--accent-color1) !important;
+    color: var(--theme-color1);
+    font-weight: 700;
+}
+
+.grid-row {
+    cursor: pointer;
+    transition: background-color 0.4s;
+}
+
+/* 各セル */
+.grid-row > div {
+    font-family: var(--title-font);
+    font-size: 1.2rem;
+    line-height: 1.5rem;
+    font-weight: 600;
+    padding: 0 1rem;
+}
+
+.col-no, .col-staff {
+    text-align: center;
+}
+
+/* スマホ用のラベル（PCでは隠す） */
+.label {
+    display: none;
+    font-size: 0.8em;
+    color: #888;
+    margin-right: 5px;
+}
+
+/* レスポンシブ対応（スマホ表示） */
+@media (max-width: 600px) {
+    .grid-header { display: none; } /* ヘッダーを隠す */
+    
+    .grid-row {
+        grid-template-columns: 50px 1fr; /* 番号と名前で1行目 */
+        grid-template-areas: 
+            "no name"
+            "staff staff";
+        padding: 10px;
+        margin-bottom: 5px;
+    }
+
+    .col-no { grid-area: no; }
+    .col-name { 
+        grid-area: name; 
+        font-weight: bold; 
+    }
+    
+    /* C, D, Ann を横に並べる */
+    .col-staff {
+        text-align: left;
+        display: inline-block;
+        padding: 5px 0;
+        font-size: 0.9em;
+    }
+    .label { display: inline; } /* スマホでは C: などのラベルを表示 */
+}
